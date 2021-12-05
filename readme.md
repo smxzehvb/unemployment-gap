@@ -1,8 +1,8 @@
 # Replication files for "Beveridgean Unemployment Gap"
 
-This repository contains the files to replicate the results in the article ["Beveridgean Unemployment Gap"](https://doi.org/10.1016/j.pubecp.2021.100009) by [Pascal Michaillat](https://www.pascalmichaillat.org) and [Emmanuel Saez](https://eml.berkeley.edu/~saez/). 
+This repository contains the files to replicate the results in the article ["Beveridgean Unemployment Gap"](https://doi.org/10.1016/j.pubecp.2021.100009) by [Pascal Michaillat](https://www.pascalmichaillat.org) and [Emmanuel Saez](https://eml.berkeley.edu/~saez/). The article and its online appendix are provided as PDF files: `article.pdf` and `onlineappendix.pdf`.
 
-The files are organized in three folders: `code`, `figures`, and `results`.
+The replication files are organized in three folders: `code`, `figures`, and `results`.
 
 ## `code`
 
