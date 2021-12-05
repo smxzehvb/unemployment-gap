@@ -153,7 +153,7 @@ The folder `results` contains the data underlying all the figures produced by th
 * `figureA8.xlsx` - panels A and B of figure A8
 * `figureA9.xlsx` - figure A9
 
-The folder also contains the output of the Bai-Perron algorithm produced by the script `baiperron.m`. The output is saved as `baiperron.txt`.
+The folder also contains the output of the Bai-Perron algorithm produced by the script `baiperron.m`. The output is saved as a text file: `baiperron.txt`.
 
 ## Article information
 
