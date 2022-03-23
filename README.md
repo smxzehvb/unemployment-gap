@@ -4,7 +4,7 @@ This repository contains the files to replicate the results in the article ["Bev
 
 The replication files are organized in three folders: `code`, `figures`, and `results`.
 
-## `code`
+## Code
 
 The folder `code` contains the code used to produce the results in the article and the data used as input. The code can be divided into two types of programs:
 
@@ -84,7 +84,7 @@ The figure-producing scripts also call the following Matlab functions:
 
 A last helper script is `baiPerron.m`. This Matlab script estimates the US Beveridge curve with the Bai-Perron algorithm. It calls on Matlab functions stored in the folder `baiperron`. The folder was created by Yohei Yamamoto, based on Gauss code by Pierre Perron. It was downloaded at http://blogs.bu.edu/perron/files/2020/05/m-break-matlab.zip.
 
-## `figures`
+## Figures
 
 The folder `figures` contains all the figures produced by the code. The figures are saved in PDF format and correspond to the following figures in the article and online appendix:
 
@@ -123,7 +123,7 @@ The folder `figures` contains all the figures produced by the code. The figures 
 * `figureA8B.pdf` - panel B of figure A8
 * `figureA9.pdf` - figure A9
 
-## `results`
+## Results
 
 The folder `results` contains the data underlying all the figures produced by the code. These data are saved as Excel files. The Excel files contain data pertaining to the following figures in the article and online appendix:
 
