@@ -1,19 +1,17 @@
 # Code & Data for "Beveridgean Unemployment Gap"
 
-This repository contains the files to replicate the results in the article ["Beveridgean Unemployment Gap"](https://doi.org/10.1016/j.pubecp.2021.100009) by [Pascal Michaillat](https://www.pascalmichaillat.org) and [Emmanuel Saez](https://eml.berkeley.edu/~saez/).
+This repository contains the code and data to produce the results in the article ["Beveridgean Unemployment Gap"](https://www.pascalmichaillat.org/9.html), written by [Pascal Michaillat](https://www.pascalmichaillat.org) and [Emmanuel Saez](https://eml.berkeley.edu/~saez/), and published in the [Journal of Public Economics Plus](https://doi.org/10.1016/j.pubecp.2021.100009) in November 2021.
 
-The replication files are organized in three folders: `code`, `figures`, and `results`.
+## Data
+
+The data used as input to produce the results in the article are stored in the Excel file `data.xlsx`, which is placed in the folder `code`. 
 
 ## Code
 
-The folder `code` contains the code used to produce the results in the article and the data used as input. The code can be divided into two types of programs:
+The code used to produce the results in the article is placed in the folder `code`. The code can be divided into two types of programs:
 
-1. Scripts used to produce all the figures in the article and online appendix
-2. Helper scripts and functions called at different places by the figure-producing scripts
-
-### Data
-
-The data used as input to produce the figures in the article and online appendix are stored in the Excel file `data.xlsx`. 
+1. Matlab scripts producing the figures in the article and online appendix
+2. Matlab helper scripts and functions called at different places by the figure-producing scripts
 
 ### Figure-producing scripts
 
@@ -86,7 +84,7 @@ A last helper script is `baiPerron.m`. This Matlab script estimates the US Bever
 
 ## Figures
 
-The folder `figures` contains all the figures produced by the code. The figures are saved in PDF format and correspond to the following figures in the article and online appendix:
+All the figures produced by the code are stored in the folder `figures`. The figures are saved in PDF format and correspond to the following figures in the article and online appendix:
 
 * `figure1A.pdf` - figure 1A
 * `figure1B.pdf` - figure 1B
@@ -125,7 +123,7 @@ The folder `figures` contains all the figures produced by the code. The figures 
 
 ## Results
 
-The folder `results` contains the data underlying all the figures produced by the code. These data are saved as Excel files. The Excel files contain data pertaining to the following figures in the article and online appendix:
+The data underlying all the figures produced by the code are stored in the folder `results`. These data are saved as Excel files. The Excel files contain data pertaining to the following figures in the article and online appendix:
 
 * `figure1A.xlsx` - figure 1A
 * `figure1B.xlsx` - figure 1B
@@ -154,16 +152,6 @@ The folder `results` contains the data underlying all the figures produced by th
 * `figureA9.xlsx` - figure A9
 
 The folder also contains the output of the Bai-Perron algorithm produced by the script `baiperron.m`. The output is saved as a text file: `baiperron.txt`.
-
-## Article information
-
-* title - Beveridgean Unemployment Gap
-* authors - Pascal Michaillat, Emmanuel Saez
-* date - November 2021
-* journal - Journal of Public Economics Plus
-* volume - 2
-* page - 100009
-* doi - https://doi.org/10.1016/j.pubecp.2021.100009
 
 ## Software versions
 
