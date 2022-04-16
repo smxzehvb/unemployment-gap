@@ -84,7 +84,11 @@ A last helper script is `baiPerron.m`. This Matlab script estimates the US Bever
 
 ## Figures
 
-All the figures produced by the code are stored in the folder `figures`. The figures are saved in PDF format and correspond to the following figures in the article and online appendix:
+The figures produced by the code are stored in the folder `figures`, both as PDF files and as Excel files.
+
+### PDF files
+
+The figures produced by the code are saved as PDF files and stored in the subfolder `pdf`. The PDF files correspond to the following figures in the article and online appendix:
 
 * `figure1A.pdf` - figure 1A
 * `figure1B.pdf` - figure 1B
@@ -121,9 +125,9 @@ All the figures produced by the code are stored in the folder `figures`. The fig
 * `figureA8B.pdf` - panel B of figure A8
 * `figureA9.pdf` - figure A9
 
-## Results
+### Excel files
 
-The data underlying all the figures produced by the code are stored in the folder `results`. These data are saved as Excel files. The Excel files contain data pertaining to the following figures in the article and online appendix:
+The data underlying all the figures produced by the code are saved as Excel files and  stored in the subfolder `xlsx`. The Excel files contain data pertaining to the following figures in the article and online appendix:
 
 * `figure1A.xlsx` - figure 1A
 * `figure1B.xlsx` - figure 1B
@@ -151,7 +155,7 @@ The data underlying all the figures produced by the code are stored in the folde
 * `figureA8.xlsx` - panels A and B of figure A8
 * `figureA9.xlsx` - figure A9
 
-The folder also contains the output of the Bai-Perron algorithm produced by the script `baiperron.m`. The output is saved as a text file: `baiperron.txt`.
+The subfolder `xlsx` also contains the output of the Bai-Perron algorithm produced by the script `baiperron.m`. The output is saved as a text file: `baiperron.txt`.
 
 ## Software versions
 
