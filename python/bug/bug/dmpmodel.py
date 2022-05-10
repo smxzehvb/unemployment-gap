@@ -19,9 +19,9 @@ def compute_beveridgean_unemployment(f, lamb):
 
     Parameters
     -----------
-    f: scalar or pd.Series
+    f: pd.Series
         Job-finding rate.
-    lamb: scalar or pd.Series
+    lamb: pd.Series
         Job-separation rate.
     
     Returns
@@ -41,9 +41,9 @@ def compute_matching_elasticity(u, epsilon):
     
     Parameters
     -----------
-    u: scalar or pd.Series
+    u: pd.Series
         unemployment rate.
-    epsilon: scalar or pd.Series
+    epsilon: pd.Series
         Beveridge elasticity.
         
     Returns
@@ -54,7 +54,7 @@ def compute_matching_elasticity(u, epsilon):
 
     return (1./(1.+ epsilon)) * (epsilon - u/(1. - u) ) 
     
-    
+
 ###############################################################
 def compute_separation_efficacy(u, eta, theta):
     '''
@@ -64,11 +64,11 @@ def compute_separation_efficacy(u, eta, theta):
     
     Parameters
     -----------
-    u: scalar or pd.Series
+    u: pd.Series
         Unemployment rate.
-    eta: scalar or pd.Series
+    eta: pd.Series
         Matching elasticity.
-    theta: scalar or pd.Series
+    theta: pd.Series
         Labor-market tightness.
     
     Returns
@@ -89,11 +89,11 @@ def compute_matching_efficacy(f, theta, eta):
     
     Parameters
     -----------
-    f: scalar or pd.Series
+    f: pd.Series
         Job-finding rate.
-    theta: scalar or pd.Series
+    theta: pd.Series
         Labor-market tightness.
-    eta: scalar or pd.Series
+    eta: pd.Series
         Matching elasticity.
     
     Returns
@@ -114,13 +114,13 @@ def compute_efficiency_endogenous(eta, z, c, lo):
     
     Parameters
     -----------
-    eta: scalar or pd.Series
+    eta: pd.Series
         Matching elasticity.
-    z: scalar or pd.Series
+    z: pd.Series
         Relative productivity of unemployed workers.
-    c: scalar or pd.Series
+    c: pd.Series
         Recruiting cost.
-    lo: scalar or pd.Series
+    lo: pd.Series
         Separation-efficiency ratio.
     
     Returns
@@ -143,17 +143,17 @@ def compute_efficiency_hosios(eta, z, c, lamb, omega, r, u0):
     
     Parameters
     -----------
-    eta: scalar or pd.Series
+    eta: pd.Series
         Matching elasticity.
-    z: scalar or pd.Series
+    z: pd.Series
         Relative productivity of unemployed workers.
-    c: scalar or pd.Series
+    c: pd.Series
         Recruiting cost.
-    lamb: scalar or pd.Series
+    lamb: pd.Series
         Job-separation rate.
-    omega: scalar or pd.Series
+    omega: pd.Series
         Matching efficacy.
-    r: scalar or pd.Series
+    r: pd.Series
         Discount rate.
     u0: scalar
         An initial value for the efficient unemployment rate.

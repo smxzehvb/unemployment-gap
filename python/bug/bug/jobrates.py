@@ -4,10 +4,10 @@ from scipy.optimize import root
 
 ## functions:
 
-### rates: compute_job_finding_rate, compute_job_separation_rate
+### compute_job_finding_rate, compute_job_separation_rate, 
 
 ###############################################################
-def compute_job_finding_rate(u_level, ushort_level, quarterly=True, adjust_short=True):    
+def compute_job_finding_rate(u_level, u_short, quarterly=True, adjust_short=True):    
     '''
     The function measures the job-finding rate from the unemployment level and short-term 
     unemployment level. The measurement method was proposed by Shimer (2012) and is 
@@ -17,7 +17,7 @@ def compute_job_finding_rate(u_level, ushort_level, quarterly=True, adjust_short
     -----------
     u_level: pd.Series
         Monthly unemployment level
-    ushort_level: pd.Series
+    u_short: pd.Series
         Monthly short-term unemployment level
     quarterly: bool, optional
         Whether to convert monthly rates to quarterlty. Default is True.
@@ -32,10 +32,13 @@ def compute_job_finding_rate(u_level, ushort_level, quarterly=True, adjust_short
     
     if adjust_short:
         # Adjust short-term unemployment level after January 1994 as in Shimer (2012, appendix A)
-        ushort_level[ushort_level.index > '1994-1'] = 1.1*ushort_level[ushort_level.index > '1994-1']
+        u_short_adj = u_short.copy(deep=True)
+        u_short_adj[u_short_adj.index > '1994-1'] = 1.1*u_short_adj[u_short_adj.index > '1994-1']
+    else:
+        u_short_adj = u_short
         
     # Compute the monthly job-finding probability from equation (A7)
-    f = 1.0 - (u_level.shift(-1) - ushort_level.shift(-1) )/u_level
+    f = 1.0 - (u_level.shift(-1) - u_short_adj.shift(-1) )/u_level
     
     # Compute the monthly job-finding rate from equation (A8)
     rate = -np.log(1.0 - f)
@@ -50,9 +53,9 @@ def compute_job_finding_rate(u_level, ushort_level, quarterly=True, adjust_short
 
 
 ###############################################################
-def job_sep_expr_(lambda_rate, *consts):
+def _job_sep_expr(lambda_rate, *inputs):
 
-    find_rate, u_level, u_level_next, h_level = consts
+    find_rate, u_level, u_level_next, h_level = inputs
     
     exp_factor = np.exp(-(find_rate+lambda_rate))
     
@@ -86,20 +89,22 @@ def compute_job_separation_rate(u_level, ushort_level, h_level, quarterly=True, 
     pd.Series
         Job-separation rate lambda
     '''
-    
-    find_rate = compute_job_finding_rate(u_level, ushort_level, quarterly=quarterly, adjust_short=adjust_short)
+    # note "quarterly" option in this call MUST BE False to get the monthly job-finding rate estimates
+    find_rate = compute_job_finding_rate(u_level, ushort_level, quarterly=False, adjust_short=adjust_short)
     
     # Compute equation (A9) solve for the monthly job-separation rate every month
     # use scipy.optimize.root to solve (setting root guess as 0.0)
     # calculate each month with a list comprehension
-    rate = [root(job_sep_eqn, 0.0, (find_rate.loc[t], unempl_level.loc[t], unempl_level.shift(-1).loc[t], labor_level.loc[t])).x[0] for t in unempl_level.index]   
+    rate = [root(_job_sep_expr, 0.0, (find_rate.loc[t], u_level.loc[t], u_level.shift(-1).loc[t], h_level.loc[t])).x[0] for t in u_level.index]
     
-    rate = pd.series(data=rate, index=unempl_level.index, name='job_sep_lambda')
+    rate = pd.Series(data=rate, index=u_level.index, name='job_sep_lambda')
         
     if quarterly:
         # monthly to quarterly
         rate = rate.resample('Q').sum()
         
     return rate
-    
+
+
+
     
