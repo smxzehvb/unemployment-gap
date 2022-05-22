@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.optimize import root
 
 ## functions:
 
@@ -103,9 +104,18 @@ def compute_matching_efficacy(f, theta, eta):
     '''
     
     return f / np.power(theta,(1. - eta))
+    
+################################################
+def _theta_expr(theta_star, *inputs):    
+    
+    eta, lo, zeta, kappa = inputs
+    
+    expr = eta*theta_star + lo * theta_star**eta - (1.0-eta)*(1.0-zeta)/kappa
+    
+    return expr     
 
 ###############################################################
-def compute_efficiency_endogenous(eta, z, c, lo):
+def compute_endogenous_efficiency(eta, lo, zeta=.26, kappa=.92 ):
     '''
     This function computes the efficient unemployment rate u_star and efficient labor-market 
     tightness theta_star in a DMP model using the sufficient-statistic formula in proposition 
@@ -116,12 +126,13 @@ def compute_efficiency_endogenous(eta, z, c, lo):
     -----------
     eta: pd.Series
         Matching elasticity.
-    z: pd.Series
-        Relative productivity of unemployed workers.
-    c: pd.Series
-        Recruiting cost.
     lo: pd.Series
-        Separation-efficiency ratio.
+        lambda/omega separation-efficiency ratio.
+    zeta: scalar, optional
+        Relative productivity of unemployed workers.
+    kappa: scalar, optional
+        Recruiting cost.
+
     
     Returns
     --------
@@ -131,11 +142,26 @@ def compute_efficiency_endogenous(eta, z, c, lo):
         theta_star: Efficient labor-market tightness.
     '''
 
+    theta_star = np.array([root( _theta_expr, 0.0, (eta.loc[t], lo.loc[t], zeta, kappa) ).x[0] for t in eta.index])
+    
+    # Apply equation (A11)
+    u_star = lo / (lo + theta_star**(1.0-eta) )
 
     return u_star, theta_star
+
+###############################################################
+def _hosios_expr(theta_star, *inputs):    
+    
+    eta, lamb, omega, r, zeta, kappa = inputs
+    
+    expr = eta*theta_star + (lamb+r)/omega * theta_star**eta - ( (1.0-eta)*(1.0-zeta)/kappa ) 
+    
+    return expr     
+
+
     
 ###############################################################
-def compute_efficiency_hosios(eta, z, c, lamb, omega, r, u0):
+def compute_hosios_efficiency(eta, lamb, omega,  u0, r=0.012, zeta=.26, kappa=.92,):
     '''
     This function computes the efficient unemployment rate u_star and efficient labor-market 
     tightness theta_star in a DMP model using the Hosios condition. This efficient unemployment 
@@ -145,18 +171,19 @@ def compute_efficiency_hosios(eta, z, c, lamb, omega, r, u0):
     -----------
     eta: pd.Series
         Matching elasticity.
-    z: pd.Series
-        Relative productivity of unemployed workers.
-    c: pd.Series
-        Recruiting cost.
     lamb: pd.Series
         Job-separation rate.
     omega: pd.Series
         Matching efficacy.
-    r: pd.Series
-        Discount rate.
     u0: scalar
         An initial value for the efficient unemployment rate.
+    r: scalar, optional
+        Discount rate.
+    zeta: scalar, optional
+        Relative productivity of unemployed workers.
+    kappa: scalar, optional
+        Recruiting cost.
+
     
     Returns
     --------
@@ -166,6 +193,17 @@ def compute_efficiency_hosios(eta, z, c, lamb, omega, r, u0):
         theta_star: Efficient labor-market tightness.
     '''
 
+    theta_star = np.array([root( _hosios_expr, 0.0, (eta.loc[t], lamb.loc[t], omega.loc[t], r, zeta, kappa) ).x[0] for t in eta.index])
+    
+    f_star = omega * theta_star**(1.0 - eta)
+    
+    ub_star = compute_beveridgean_unemployment(f_star, lamb)
+    
+    u_star = ub_star.copy(deep=True)
+    u_star.iloc[0] = u0
+    
+    for i, t in enumerate(u_star.index[:-1]):
+        u_star.iloc[i+1] = ub_star.loc[t] + (u_star.loc[t] - ub_star.loc[t] ) * np.exp( -(lamb.loc[t] + f_star.loc[t]) )
 
     return u_star, theta_star
     

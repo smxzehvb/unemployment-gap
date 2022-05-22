@@ -47,9 +47,9 @@ def compute_efficient_unemployment(u, v, epsilon, zeta=0.26, kappa=0.92):
     
     Parameters
     -----------
-    u: scalar or pd.Series
+    u: pd.Series
         Current unemployment rate.
-    v: scalar or pd.Series
+    v: pd.Series
         Vacancy rate.
     epsilon: scalar or pd.Series
         Beveridge elasticity.
