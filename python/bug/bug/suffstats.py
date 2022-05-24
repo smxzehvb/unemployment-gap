@@ -6,6 +6,7 @@ import pandas as pd
 ### efficiency: compute_efficient_unemployment, compute_efficient_tightness,
 ### inverse: compute_beveridge_inverse, compute_recruiting_inverse, compute_nonwork_inverse
 
+
 ###############################################################
 def compute_unemployment_gap(u, v, epsilon, zeta=0.26, kappa=0.92):
     '''
@@ -168,6 +169,5 @@ def compute_nonwork_inverse(theta, epsilon, kappa=0.92):
     '''
 
     return 1. - (kappa * epsilon * theta)
-
 
 
