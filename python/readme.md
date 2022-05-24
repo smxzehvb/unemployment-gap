@@ -38,10 +38,10 @@ Additional packages installed from pypi:
 
 
 | matlab file | python function | python file/notes | 
-| :---------- | :-------------- | :---------- |	
+| :---------- | :-------------- | :---------: |	
 | baiPerron.m					| `get_bp_breakpoints` 			 | breakpoints.py |
-| getBreakDate.m				| `get_bp_breakpoints` 			 | ^ |
-| getBeveridgeElasticity.m		| `compute_beveridge_elasticity` | ^ |
+| getBreakDate.m				| `get_bp_breakpoints` 			 | ^^ |
+| getBeveridgeElasticity.m		| `compute_beveridge_elasticity` | ^^ |
 | computeUnemploymentGap.m			| `compute_unemployment_gap` 		| suffstats.py |
 | computeEfficientTightness.m		| `compute_efficient_tightness` 	| ^ |
 | computeEfficientUnemployment.m	| `compute_efficient_unemployment`  | ^ |
