@@ -41,6 +41,7 @@ Additional packages installed from pypi:
 | :---------- | :-------------- | :---------: |	
 | baiPerron.m					| `get_bp_breakpoints` 			 | breakpoints.py |
 | getBreakDate.m				| `get_bp_breakpoints` 			 | ^^ |
+|.....................................................|
 | getBeveridgeElasticity.m		| `compute_beveridge_elasticity` | ^^ |
 | computeUnemploymentGap.m			| `compute_unemployment_gap` 		| suffstats.py |
 | computeEfficientTightness.m		| `compute_efficient_tightness` 	| ^ |
