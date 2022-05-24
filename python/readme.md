@@ -39,24 +39,28 @@ Additional packages installed from pypi:
 
 | matlab file | python function | python file/notes | 
 | :---------- | :-------------- | :---------: |	
-| baiPerron.m					| `get_bp_breakpoints` 			 | breakpoints.py |
-| getBreakDate.m				| `get_bp_breakpoints` 			 | ^^ |
 |.....................................................|
-| getBeveridgeElasticity.m		| `compute_beveridge_elasticity` | ^^ |
+| baiPerron.m					| `get_bp_breakpoints` 			 | breakpoints.py |
+| getBreakDate.m				| `get_bp_breakpoints` 			 | ^ |
+| getBeveridgeElasticity.m		| `compute_beveridge_elasticity` | ^ |
+|.....................................................|
 | computeUnemploymentGap.m			| `compute_unemployment_gap` 		| suffstats.py |
 | computeEfficientTightness.m		| `compute_efficient_tightness` 	| ^ |
 | computeEfficientUnemployment.m	| `compute_efficient_unemployment`  | ^ |
 | computeBeveridgeInverse.m		| `compute_beveridge_inverse`  			| ^ |
 | computeRecruitingInverse.m	| `compute_recruiting_inverse` 			| ^ |
 | computeNonworkInverse.m		| `compute_nonwork_inverse`	   			| ^ |
+|.....................................................|
 | computeBeveridgeanUnemployment.m	| `compute_beveridgean_unemployment` | dmpmodel.py |
 | computeMatchingElasticity.m		| `compute_matching_elasticity` 	 | ^ |
 | computeMatchingEfficacy.m			| `compute_matching_efficacy`		 | ^ |
 | computeSeparationEfficacy.m		| `compute_separation_efficacy`		 | ^ |
 | computeEfficiencyEndogenous.m		| `compute_endogenous_efficiency`	 | ^ |
 | computeEfficiencyHosios.m			| `compute_hosios_efficiency`		 | ^ |
+|.....................................................|
 | measureJobFinding.m			| `compute_job_finding_rate`  	| jobrates.py |
 | measureJobSeparation.m		| `compute_job_separation_rate`	| ^ |
+|.....................................................|
 | getUnemploymentRate.m		| *depreciated*	| handled wth pandas functionality <br>  demonstrated in jupyter notebooks |
 | getVacancyRate.m			| *depreciated*	| ^ |
 | getRecessionDate.m		| *depreciated*	| ^ |
@@ -66,6 +70,7 @@ Additional packages installed from pypi:
 | getTrendUnemployment.m	| *depreciated*	| ^ |
 | getTimeline.m 			| *depreciated*	| ^ |
 | monthlyToQuarterly.m		| *depreciated*	| ^ |
+|.....................................................|
 | formatFigure.m			| *depreciated*	| handled wth matplotlib functionality <br>  demonstrated in jupyter notebooks |
 | formatPlot.m				| *depreciated*	| ^ |
 | figureX.m					| *depreciated*	| ^ |
