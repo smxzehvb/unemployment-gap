@@ -56,7 +56,6 @@ Additional packages installed from pypi:
 | computeEfficiencyHosios.m			| `compute_hosios_efficiency`		 | ^ |
 | measureJobFinding.m			| `compute_job_finding_rate`  	| jobrates.py |
 | measureJobSeparation.m		| `compute_job_separation_rate`	| ^ |
-
 | getUnemploymentRate.m		| *depreciated*	| handled wth pandas functionality <br>  demonstrated in jupyter notebooks |
 | getVacancyRate.m			| *depreciated*	| ^ |
 | getRecessionDate.m		| *depreciated*	| ^ |
