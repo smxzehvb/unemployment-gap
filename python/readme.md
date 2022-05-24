@@ -15,11 +15,11 @@ The paper's code was originally implemented in MATLAB, and can be found on the p
   * ruptures
   * matplotlib
   
-## Development status
+## Development
 
 This package is a work-in-progress, academic package, and is not guaranteed to be robust.
 
-This version has been tested with (from anaconda 4.12.0):
+This version has been tested with (from anaconda 4.12.0 for Linux):
 
   * python==3.9.12
   * IPython==8.2.0
@@ -33,6 +33,8 @@ This version has been tested with (from anaconda 4.12.0):
 Additional packages installed from pypi:
 
   * ruptures==1.1.6 
+  
+Development was done on a desktop running 64-bit Pop!_OS 20.04 LTS (a flavor of Ubuntu) with GNOME version 3.36.8.
   
 ## Conversion crosswalk
 
