@@ -158,7 +158,7 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=-1
 
         
     else:
-        if n_bkps > 0 and min_size * (n_bps+1) > len(log_u)-1:
+        if n_bkps > 0 and min_size * (n_bkps+1) > len(log_u)-1:
             raise ValueError("Parameters invalid. Either min_size or n_bkps (or both) too big for length of series!")
         elif n_bkps < 1:
             # run procedure to estimate number of breakpoints
