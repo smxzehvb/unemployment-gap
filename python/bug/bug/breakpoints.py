@@ -97,11 +97,11 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
     
     
 ###############################################################
-def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, model=None, min_size=None, n_bkps=None):
+def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=-1, max_bkps=20):
     '''
-    This function calls the dynamic programming method from
-    the python ruptures package to calculate the breakpoints
-    according to the Bai-Perron method.
+    This function calls the dynamic programming method with linear 
+    cost functions from the python ruptures package to calculate 
+    the breakpoints according to the Bai-Perron method.
     
     Parameters
     -----------
@@ -112,14 +112,12 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, model=None, min_size=
     use_bp_defaults: bool, optional
         Whether to use Bai-Perron method for estimating structural break timepoints,
         using the same parameter settings as in Michaillat & Saez (2021). Default is True.
-    model: str, optional
-       A valid model name to be used with ruptures rpt.Dynp algorithm. Use model='linear'
-       to emulate the Bai-Perron algorithm. Needs to be specified if use_bp_defaults=False.
     min_size: int, optional
         A valid min_size parameter to be used with ruptures rpt.Dynp algorithm.
         Needs to be specified if use_bp_defaults=False.
     n_bkps: int, optional
         Needs to be specified if use_bp_defaults=False.
+        Use n_bkps = -1 to run a procedure to test for the number of breakpoints.
         
         
     Returns
@@ -141,34 +139,89 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, model=None, min_size=
     log_u = log_u.loc[:last_index]
     log_v = log_v.loc[:last_index]
     
+    ## set up the data
+    y = np.array(log_v)
+    X = np.vstack((np.array(log_u), np.ones(len(y)))).T    
+    signal = np.column_stack((y.reshape(-1, 1), X))
+    
+    
     if use_bp_defaults:
         # these settings correspond to the algorithm in Bai & Perron (2003)
         # see: https://centre-borelli.github.io/ruptures-docs/user-guide/costs/costlinear/
         # with setting as used in Michaillat & Saez (2021)
         # this will give us the same output as the MATLAB
-        model = 'linear'
         min_size = int(0.15*len(log_v)) 
         n_bkps = 5
+
+        # call the dynamic programming algo
+        est_bkps = _call_dynp(signal, min_size,n_bkps)
+
         
     else:
-        if model is None or min_size is None or n_bkps is None:
-            raise ValueError("You forgot to input parameters! \n Either use 'use_bp_defaults=True,' or "+
-            "specify each of 'model,' min_size,' and 'n_bkps.'")
+        if n_bkps > 0 and min_size * (n_bps+1) > len(log_u)-1:
+            raise ValueError("Parameters invalid. Either min_size or n_bkps (or both) too big for length of series!")
+        elif n_bkps < 1:
+            # run procedure to estimate number of breakpoints
+            n_bkps = estimate_num_breaks(max_bkps=max_bkps, min_size=min_size)
+
+        # call the dynamic programming algo
+        est_bkps = _call_dynp(signal, min_size, n_bkps)       
+
+        
+    return est_bkps
     
 
-    ## set up the data
-    y = np.array(log_v)
-    X = np.vstack((np.array(log_u), np.ones(len(y)))).T
-    
+###############################################################
+def _call_dynp(signal, min_size, n_bkps):
 
-    # call the dynamic programming algo
-    bai_fit = rpt.Dynp(model=model, min_size=min_size, jump=1).fit(np.column_stack((y.reshape(-1, 1), X)))
-    est_bkps = bai_fit.predict(n_bkps=n_bkps)
-    est_bkps.insert(0,0)
-    
+    fit = rpt.Dynp(model='linear', min_size=min_size, jump=1).fit(signal)
+    est_bkps = fit.predict(n_bkps=n_bkps)
+    est_bkps.insert(0,0)  
     
     return est_bkps
     
     
+###############################################################
+def estimate_num_breaks(signal, max_bkps, min_size=4):
+
+    # null model: zero breaks
+    t = signal.shape[0]
+    maxlags = int( (0.15*t)**(.25))
+    
+    model = sm.OLS(signal[:,0], signal[:,1:]) 
+    results = model.fit(cov_type='HAC', cov_kwds={'maxlags':maxlags, 'use_correction': True}, use_t=True)
+    
+    ssr = [results.ssr]
+    bic = [np.log(ssr[0]/t) + np.log(t)*2/t]
+    lwc = [np.log(ssr[0]/(t-2)) + 0.299*(2/t)*np.log(t)**2.1]
+    
+    # set up the breakpoint detection
+    fit = rpt.Dynp(model='linear', min_size=min_size, jump=1).fit(signal)
+    _ = fit.predict(max_bkps)
+    
+    bps_list=[[0,signal.shape[0]] ]
+    # iterate over possible number of breakpoints
+    for m in range(1,max_bkps+1):
+    
+        bkps = fit.predict(n_bkps=m)
+        bkps.insert(0,0)
+        bps_list.append(bkps)
+        ssr_tmp = 0
+        
+        for idx, b in enumerate(bkps[:-1]):
+ 
+            model = sm.OLS(signal[bkps[idx]:bkps[idx+1],0], signal[bkps[idx]:bkps[idx+1],1:]) 
+            results = model.fit(cov_type='HAC', cov_kwds={'maxlags':maxlags, 'use_correction': True}, use_t=True)
+            
+            # add the ssr for the segment
+            ssr_tmp += results.ssr
+            
+        ssr.append(ssr_tmp)
+        bic.append( np.log(ssr_tmp/t) + (2*(m+1)+m)*np.log(t)/t ) 
+        lwc.append( np.log(ssr_tmp/(t-(2*(m+1)+m))) + 0.299*((2*(m+1)+m)/t)*np.log(t)**2.1 )
+             
+        n_bkps = np.argmin(bic)
+    
+    return bic, lwc, ssr, bps_list
     
     
