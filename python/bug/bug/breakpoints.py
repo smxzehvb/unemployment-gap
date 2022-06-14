@@ -72,14 +72,14 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
     # statsmodels uses Newey-West HAC, which is slightly different than the 
     # Andrews HAC used by Bai & Perron.
     # see Cheung & Lai (1997) for nice discussion on N-W vs Andrews HAC
-    maxlags = int( (0.15*len(log_v))**(.25))
+    haclags = int( (0.15*len(log_v))**(.25))
     
     coeffs = []  
       
     for idx, b in enumerate(est_bkps[:-1]):
  
         model = sm.OLS(y[est_bkps[idx]:est_bkps[idx+1]], X[est_bkps[idx]:est_bkps[idx+1],:]) 
-        results = model.fit(cov_type='HAC', cov_kwds={'maxlags':maxlags, 'use_correction': True}, use_t=True)
+        results = model.fit(cov_type='HAC', cov_kwds={'maxlags':haclags, 'use_correction': True}, use_t=True)
         coeffs.append((- results.params[0], results.bse[0]))
 
         
@@ -174,6 +174,7 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=-1
 ###############################################################
 def _call_dynp(signal, min_size, n_bkps):
 
+    # helper function to call the actual meat of the dynamic programming fit
     fit = rpt.Dynp(model='linear', min_size=min_size, jump=1).fit(signal)
     est_bkps = fit.predict(n_bkps=n_bkps)
     est_bkps.insert(0,0)  
@@ -182,18 +183,22 @@ def _call_dynp(signal, min_size, n_bkps):
     
     
 ###############################################################
-def estimate_num_breaks(signal, max_bkps, min_size=4):
+def evaluate_num_breaks(signal, max_bkps, min_size=4):
 
-    # null model: zero breaks
+    
     t = signal.shape[0]
-    maxlags = int( (0.15*t)**(.25))
+    q = signal.shape[1]-1
+    
+    # null model: zero breaks
+    haclags = int( (0.15*t)**(.25))
     
     model = sm.OLS(signal[:,0], signal[:,1:]) 
-    results = model.fit(cov_type='HAC', cov_kwds={'maxlags':maxlags, 'use_correction': True}, use_t=True)
+    results = model.fit(cov_type='HAC', cov_kwds={'maxlags':haclags, 'use_correction': True}, use_t=True)
     
+    # start lists with first element the result for zero breaks model
     ssr = [results.ssr]
-    bic = [np.log(ssr[0]/t) + np.log(t)*2/t]
-    lwc = [np.log(ssr[0]/(t-2)) + 0.299*(2/t)*np.log(t)**2.1]
+    bic = [ _bic(0, ssr[0], q, t, use_lwz=False) ]
+    lwz = [ _bic(0, ssr[0], q, t, use_lwz=True) ]
     
     # set up the breakpoint detection
     fit = rpt.Dynp(model='linear', min_size=min_size, jump=1).fit(signal)
@@ -206,22 +211,37 @@ def estimate_num_breaks(signal, max_bkps, min_size=4):
         bkps = fit.predict(n_bkps=m)
         bkps.insert(0,0)
         bps_list.append(bkps)
-        ssr_tmp = 0
         
+        ssr_tmp = 0        
         for idx, b in enumerate(bkps[:-1]):
- 
+            # iterate over the segments of the model with m breaks, add up the ssr piece-wise
             model = sm.OLS(signal[bkps[idx]:bkps[idx+1],0], signal[bkps[idx]:bkps[idx+1],1:]) 
-            results = model.fit(cov_type='HAC', cov_kwds={'maxlags':maxlags, 'use_correction': True}, use_t=True)
+            results = model.fit(cov_type='HAC', cov_kwds={'maxlags':haclags, 'use_correction': True}, use_t=True)
             
             # add the ssr for the segment
             ssr_tmp += results.ssr
             
+        # append results to lists    
         ssr.append(ssr_tmp)
-        bic.append( np.log(ssr_tmp/t) + (2*(m+1)+m)*np.log(t)/t ) 
-        lwc.append( np.log(ssr_tmp/(t-(2*(m+1)+m))) + 0.299*((2*(m+1)+m)/t)*np.log(t)**2.1 )
+        bic.append( _bic(m, ssr_tmp, q, t) ) 
+        lwz.append( _bic(m, ssr_tmp, q, t, use_lwz=True) )
              
         n_bkps = np.argmin(bic)
     
-    return bic, lwc, ssr, bps_list
+    return bic, lwz, ssr, bps_list
     
+
+#################
+def _bic(m, ssr, q, t, use_lwz=False):
+    # helper function to return the BIC 
+    # or Liu, Wu and Zidek (1994) modified criterion
+
+    if use_lwz:
+    
+        return( np.log(ssr/(t-(q*(m+1)+m))) + 0.299*((q*(m+1)+m)/t)*np.log(t)**2.1  )
+    else:
+        return( np.log(ssr/t) + (q*(m+1)+m)*np.log(t)/t)
+    
+    
+
     

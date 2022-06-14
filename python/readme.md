@@ -14,6 +14,10 @@ The paper's code was originally implemented in MATLAB, and can be found on the p
   * statsmodels
   * ruptures
   * matplotlib
+  * kneed
+
+The package 'kneed' is only used in some of the example notebooks. It is not required for the execution of functions 
+in the bug package.   
   
 ## Development
 
@@ -32,7 +36,9 @@ This version has been tested with (from anaconda 4.12.0 for Linux):
   
 Additional packages installed from pypi:
 
-  * ruptures==1.1.6 
+  * ruptures==1.1.6
+  * kneed==0.7.0
+   
   
 Development was done on a desktop running 64-bit Pop!_OS 20.04 LTS (a flavor of Ubuntu) with GNOME version 3.36.8.
   
@@ -43,6 +49,7 @@ Development was done on a desktop running 64-bit Pop!_OS 20.04 LTS (a flavor of 
 | :---------- | :-------------- | :---------: |	
 |.....................................................|
 | baiPerron.m					| `get_bp_breakpoints` 			 | breakpoints.py |
+| baiPerron.m  					| `evaluate_num_breaks` 		 | ^ |
 | getBreakDate.m				| `get_bp_breakpoints` 			 | ^ |
 | getBeveridgeElasticity.m		| `compute_beveridge_elasticity` | ^ |
 |.....................................................|
