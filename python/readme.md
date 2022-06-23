@@ -70,6 +70,14 @@ Development was done on a desktop running 64-bit Pop!_OS 20.04 LTS (a flavor of 
 | measureJobFinding.m			| `compute_job_finding_rate`  	| jobrates.py |
 | measureJobSeparation.m		| `compute_job_separation_rate`	| ^ |
 |.....................................................|
+| 	*NA*					| `plot_beveridge_elasticity_series` |  viz.py  |
+| 	*NA*					| `plot_beveridge_gap_series` |  ^  |
+| 	*NA*					| `plot_beveridge_curve_fits` |  ^  |
+| 	*NA*					| `plot_beveridge_curve_segments` |  ^  |
+| formatPlot.m				| `format_plot`	| ^ |
+| formatFigure.m			| *depreciated*	| ^ |
+| figureX.m					| *depreciated*	| ^ |
+|.....................................................|
 | getUnemploymentRate.m		| *depreciated*	| handled wth pandas functionality <br>  demonstrated in jupyter notebooks |
 | getVacancyRate.m			| *depreciated*	| ^ |
 | getRecessionDate.m		| *depreciated*	| ^ |
@@ -79,10 +87,6 @@ Development was done on a desktop running 64-bit Pop!_OS 20.04 LTS (a flavor of 
 | getTrendUnemployment.m	| *depreciated*	| ^ |
 | getTimeline.m 			| *depreciated*	| ^ |
 | monthlyToQuarterly.m		| *depreciated*	| ^ |
-|.....................................................|
-| formatFigure.m			| *depreciated*	| handled wth matplotlib functionality <br>  demonstrated in jupyter notebooks |
-| formatPlot.m				| *depreciated*	| ^ |
-| figureX.m					| *depreciated*	| ^ |
 
 
 
