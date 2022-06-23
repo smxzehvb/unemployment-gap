@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import ruptures as rpt
 import statsmodels.api as sm
-
+from scipy.stats import f
 
 ###############################################################
 def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkps_in=None):
@@ -97,7 +97,7 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
     
     
 ###############################################################
-def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=-1, max_bkps=20):
+def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=1):
     '''
     This function calls the dynamic programming method with linear 
     cost functions from the python ruptures package to calculate 
@@ -114,10 +114,9 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=-1
         using the same parameter settings as in Michaillat & Saez (2021). Default is True.
     min_size: int, optional
         A valid min_size parameter to be used with ruptures rpt.Dynp algorithm.
-        Needs to be specified if use_bp_defaults=False.
+        Should be specified if use_bp_defaults=False.
     n_bkps: int, optional
-        Needs to be specified if use_bp_defaults=False.
-        Use n_bkps = -1 to run a procedure to test for the number of breakpoints.
+        Should be specified if use_bp_defaults=False.
         
         
     Returns
@@ -148,39 +147,20 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=-1
     if use_bp_defaults:
         # these settings correspond to the algorithm in Bai & Perron (2003)
         # see: https://centre-borelli.github.io/ruptures-docs/user-guide/costs/costlinear/
-        # with setting as used in Michaillat & Saez (2021)
-        # this will give us the same output as the MATLAB
+        # with num breakpoints and min size parameter values set as in Michaillat & Saez (2021)
+        # this will then output the same breakpoints as the M&S MATLAB code
+        # (so then, using different num breakpoints and min size parameter values 
+        # will NOT necessarily give same results as MATLAB)
         min_size = int(0.15*len(log_v)) 
         n_bkps = 5
 
-        # call the dynamic programming algo
-        est_bkps = _call_dynp(signal, min_size,n_bkps)
-
-        
-    else:
-        if n_bkps > 0 and min_size * (n_bkps+1) > len(log_u)-1:
-            raise ValueError("Parameters invalid. Either min_size or n_bkps (or both) too big for length of series!")
-        elif n_bkps < 1:
-            # run procedure to estimate number of breakpoints
-            n_bkps = estimate_num_breaks(max_bkps=max_bkps, min_size=min_size)
-
-        # call the dynamic programming algo
-        est_bkps = _call_dynp(signal, min_size, n_bkps)       
-
-        
-    return est_bkps
-    
-
-###############################################################
-def _call_dynp(signal, min_size, n_bkps):
-
-    # helper function to call the actual meat of the dynamic programming fit
+    # call the dynamic programming algo
     fit = rpt.Dynp(model='linear', min_size=min_size, jump=1).fit(signal)
     est_bkps = fit.predict(n_bkps=n_bkps)
     est_bkps.insert(0,0)  
     
     return est_bkps
-    
+        
     
 ###############################################################
 def evaluate_num_breaks(signal, max_bkps, min_size=4):
@@ -190,21 +170,25 @@ def evaluate_num_breaks(signal, max_bkps, min_size=4):
     q = signal.shape[1]-1
     
     # null model: zero breaks
-    haclags = int( (0.15*t)**(.25))
+    haclags = int( (0.15*t)**(.25) )
     
     model = sm.OLS(signal[:,0], signal[:,1:]) 
     results = model.fit(cov_type='HAC', cov_kwds={'maxlags':haclags, 'use_correction': True}, use_t=True)
     
     # start lists with first element the result for zero breaks model
     ssr = [results.ssr]
+    fits = [results.fittedvalues]
     bic = [ _bic(0, ssr[0], q, t, use_lwz=False) ]
     lwz = [ _bic(0, ssr[0], q, t, use_lwz=True) ]
+    fstat_zero = [ None ]
+    fstat_run = [ None ]    
     
     # set up the breakpoint detection
     fit = rpt.Dynp(model='linear', min_size=min_size, jump=1).fit(signal)
     _ = fit.predict(max_bkps)
     
-    bps_list=[[0,signal.shape[0]] ]
+    bps_list=[ [0,signal.shape[0]] ]
+    
     # iterate over possible number of breakpoints
     for m in range(1,max_bkps+1):
     
@@ -212,26 +196,37 @@ def evaluate_num_breaks(signal, max_bkps, min_size=4):
         bkps.insert(0,0)
         bps_list.append(bkps)
         
-        ssr_tmp = 0        
+        ssr_tmp = 0  
+        fits_tmp = []       
         for idx, b in enumerate(bkps[:-1]):
             # iterate over the segments of the model with m breaks, add up the ssr piece-wise
+            haclags = int( (0.15*(bkps[idx+1]-bkps[idx]))**(.25) )
             model = sm.OLS(signal[bkps[idx]:bkps[idx+1],0], signal[bkps[idx]:bkps[idx+1],1:]) 
             results = model.fit(cov_type='HAC', cov_kwds={'maxlags':haclags, 'use_correction': True}, use_t=True)
             
             # add the ssr for the segment
             ssr_tmp += results.ssr
+            fits_tmp.append(results.fittedvalues)
+                
             
         # append results to lists    
         ssr.append(ssr_tmp)
+        fits.append(fits_tmp)
+        
         bic.append( _bic(m, ssr_tmp, q, t) ) 
         lwz.append( _bic(m, ssr_tmp, q, t, use_lwz=True) )
-             
-        n_bkps = np.argmin(bic)
-    
-    return bic, lwz, ssr, bps_list
-    
 
-#################
+        fstat_zero.append( _f_test(ssr[0], ssr_tmp, 0, m, q+1, t) )
+        fstat_run.append( _f_test(ssr[m-1], ssr_tmp, m-1, m, q+1, t)  )
+        
+    
+    return BkpsEval(bic=bic, lwz=lwz, ssr=ssr, bkps=bps_list, fitted_values=fits, 
+                    f_stats_zero_v_m=fstat_zero, f_stats_running=fstat_run,
+                    min_size=min_size, size=t, max_bkps=max_bkps)
+
+
+
+################################
 def _bic(m, ssr, q, t, use_lwz=False):
     # helper function to return the BIC 
     # or Liu, Wu and Zidek (1994) modified criterion
@@ -243,5 +238,57 @@ def _bic(m, ssr, q, t, use_lwz=False):
         return( np.log(ssr/t) + (q*(m+1)+m)*np.log(t)/t)
     
     
-
+def _f_test(ssr_null, ssr_alt, n, m, k, t):
+    ''' A Chow type F test for structural breaks'''
     
+    F = ((ssr_null-ssr_alt)/k)/(ssr_alt/(t-2*k))
+    
+    p = 1 - f.cdf(F, k, t-2*k)
+
+
+    return {'F':F, 'pval':p, 'null':n, 'alt':m}
+    
+    
+###############################################
+class BkpsEval():
+    """
+    Class to hold results from breakpoint evaluations
+
+    Attributes
+    ----------
+    bic: list of float
+        BIC information criterion.
+    lwz: list of float
+        Liu, Wu and Zidek (1994) modified information criterion.       
+    ssr: list of float
+        Sum of squared residuals.       
+    bkps: list of lists
+        Lists of breakpoint indicies. 
+    max_bkps: int
+        Max number of breakpoints considered.
+    min_size: int
+        Min size allowed for sub-sequences.  
+    size: int
+        Length of the total sequence.  
+    fitted_values: list of lists
+        The piece-wise fitted values from the OLS fits.    
+    f_stats_zero_v_m: list of tuples    
+    f_stats_running: list of tuples
+        
+    """ 
+    
+    def __init__(self, bic, lwz, ssr, bkps, max_bkps, min_size, size, 
+                fitted_values, f_stats_zero_v_m, f_stats_running):
+
+        self.bic = bic
+        self.lwz = lwz   
+        self.ssr = ssr
+        self.bkps = bkps
+        self.max_bkps = max_bkps        
+        self.min_size = min_size
+        self.size = size
+        self.fitted_values = fitted_values
+        self.f_stats_zero_v_m = f_stats_zero_v_m
+        self.f_stats_running = f_stats_running
+        
+
