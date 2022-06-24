@@ -53,7 +53,7 @@ def plot_beveridge_elasticity_series(e, rec_info=None, color='blueviolet', figsi
 def plot_beveridge_gap_series(gap, internal_bkps=None, rec_info=None, color='blue', figsize=(9, 6)):
 
 
-    ax = gap.plot(figsize=figsize, linewidth=2, color=color, label='w/ '+str(len(internal_bkps))+' breakpoints')
+    ax = gap.plot(figsize=figsize, linewidth=2, color=color, label='Beveridge Gap')
 
     plt.axhline(y=0, color='magenta', linewidth=1.5,)
 
@@ -113,32 +113,53 @@ def plot_beveridge_curve_segments(log_u, log_v, bkps, color='teal', figsize=(6,6
 ##############################################################
 def plot_beveridge_curve_fits(log_u, log_v, bkps, fits, e, figsize=(8,8)):
 
+
+    plt.figure(figsize = figsize)
+    plt.plot(log_u, log_v, linewidth=1, color='grey', zorder=-10)
+
     cmap = plt.get_cmap('CMRmap')
-    colors = cmap( np.linspace(.1,.9,len(bkps)) )
 
     handles = []
 
-    plt.figure(figsize = figsize)
-    plt.plot(log_u, log_v, linewidth=1, color='grey')
+   
+    if len(bkps) == len(log_u):
+        # assume class label for each (integers starting at zero)
+        colors = cmap( np.linspace(.1,.9,len(np.unique(bkps))) )
+        for c in sorted(np.unique(bkps)):
+        
+            plt.scatter(log_u[bkps==c],
+                     log_v.iloc[bkps==c],
+                     color=colors[c], alpha=.95)            
 
-    for idx, b in enumerate(bkps[:-1]):
+            plt.plot(log_u[bkps==c], fits[c],
+                     linewidth=2.5, linestyle='dotted', color=colors[c], alpha=1)
+
+            handles.append(Line2D([0], [0],color=colors[c], linewidth=2,
+                                  label=str(c)+" : "+str( round(e[c],2) )  ))
+
+        plt.legend(handles=handles, bbox_to_anchor=(1,1), title='Cluster : Slope')
+
+    else: 
+        colors = cmap( np.linspace(.1,.9,len(bkps)) )
+        for idx, b in enumerate(bkps[:-1]):
     
-        plt.plot(log_u.iloc[bkps[idx]:bkps[idx+1]],
-                 log_v.iloc[bkps[idx]:bkps[idx+1]], 
-                 linewidth=2, color=colors[idx], alpha=.7)
+            plt.plot(log_u.iloc[bkps[idx]:bkps[idx+1]],
+                     log_v.iloc[bkps[idx]:bkps[idx+1]], 
+                     linewidth=2, color=colors[idx], alpha=.7)
                  
     
-        plt.plot(log_u.iloc[bkps[idx]:bkps[idx+1]], fits[idx],
-                 linewidth=2.5, linestyle='dotted', color=colors[idx], alpha=.9)
+            plt.plot(log_u.iloc[bkps[idx]:bkps[idx+1]], fits[idx],
+                     linewidth=2.5, linestyle='dotted', color=colors[idx], alpha=1)
+
     
-        q = log_u.index[bkps[idx]]
-        handles.append(Line2D([0], [0],color=colors[idx], linewidth=2,
+            q = log_u.index[bkps[idx]]
+            handles.append(Line2D([0], [0],color=colors[idx], linewidth=2,
                                   label=str(q)+' : '+ 
-                                  str( round(e['E'].loc[q],2) )
-                             ))
+                                  str( round(e[idx],2) )  ))
 
 
-    plt.legend(handles=handles, bbox_to_anchor=(1,1), title='Period Beginning : Slope  ')
+
+        plt.legend(handles=handles, bbox_to_anchor=(1,1), title='Period Beginning : Slope  ')
     
     plt.gca().spines["bottom"].set_linewidth(1.5)
     plt.gca().spines["bottom"].set_color('k')

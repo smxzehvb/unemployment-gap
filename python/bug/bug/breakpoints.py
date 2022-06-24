@@ -226,7 +226,7 @@ def evaluate_num_breaks(signal, max_bkps, min_size=4):
 
 
 
-################################
+########################################
 def _bic(m, ssr, q, t, use_lwz=False):
     # helper function to return the BIC 
     # or Liu, Wu and Zidek (1994) modified criterion
@@ -237,13 +237,15 @@ def _bic(m, ssr, q, t, use_lwz=False):
     else:
         return( np.log(ssr/t) + (q*(m+1)+m)*np.log(t)/t)
     
-    
+
+############################################
 def _f_test(ssr_null, ssr_alt, n, m, k, t):
     ''' A Chow type F test for structural breaks'''
     
-    F = ((ssr_null-ssr_alt)/k)/(ssr_alt/(t-2*k))
+    df2 = t-(m+1)*2*k
+    F = ((ssr_null-ssr_alt)/k)/(ssr_alt/df2)
     
-    p = 1 - f.cdf(F, k, t-2*k)
+    p = 1 - f.cdf(F, k, df2)
 
 
     return {'F':F, 'pval':p, 'null':n, 'alt':m}
