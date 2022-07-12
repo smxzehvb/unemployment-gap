@@ -4,6 +4,11 @@ import ruptures as rpt
 import statsmodels.api as sm
 from scipy.stats import f
 
+
+###########################################################
+def _calc_hac_lag(seq_len):
+    return max(2,int( (0.15*seq_len)**(.25)))
+
 ###############################################################
 def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkps_in=None):
     '''
@@ -14,9 +19,9 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
     Parameters
     -----------
     u: scalar or pd.Series
-        Current unemployment rate.
+        Current unemployment rate. value in [0,1]
     v: scalar or pd.Series
-        Vacancy rate.
+        Vacancy rate. value in [0,1]
     quarterly: bool, optional
     use_bp_defaults: bool, optional
         Whether to use Bai-Perron method for estimating structural break timepoints,
@@ -36,9 +41,9 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
     '''
     
     if quarterly:
-        log_u = np.log(u.resample('Q').mean()/100.)
+        log_u = np.log(u.resample('Q').mean())
     
-        log_v = np.log(v.resample('Q').mean()/100.)
+        log_v = np.log(v.resample('Q').mean())
         
         last_index = min(log_u.last_valid_index(), log_v.last_valid_index())
         log_u = log_u.loc[:last_index]
@@ -46,8 +51,8 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
         
         
     else:
-        log_u = np.log(u/100.)
-        log_v = np.log(v/100.)
+        log_u = np.log(u)
+        log_v = np.log(v)
         
     if bkps_in is None:
     
@@ -72,14 +77,14 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
     # statsmodels uses Newey-West HAC, which is slightly different than the 
     # Andrews HAC used by Bai & Perron.
     # see Cheung & Lai (1997) for nice discussion on N-W vs Andrews HAC
-    haclags = int( (0.15*len(log_v))**(.25))
     
     coeffs = []  
       
     for idx, b in enumerate(est_bkps[:-1]):
  
+        seq_len = est_bkps[idx+1] - est_bkps[idx]
         model = sm.OLS(y[est_bkps[idx]:est_bkps[idx+1]], X[est_bkps[idx]:est_bkps[idx+1],:]) 
-        results = model.fit(cov_type='HAC', cov_kwds={'maxlags':haclags, 'use_correction': True}, use_t=True)
+        results = model.fit(cov_type='HAC', cov_kwds={'maxlags':_calc_hac_lag(seq_len), 'use_correction': True}, use_t=True)
         coeffs.append((- results.params[0], results.bse[0]))
 
         
@@ -91,9 +96,8 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
         bev_e.iloc[est_bkps[idx]:est_bkps[idx+1],2] = a[0] - 1.96*a[1]
         bev_e.iloc[est_bkps[idx]:est_bkps[idx+1],3] = a[0] + 1.96*a[1]
         
-    bev_e = bev_e.astype('f')
 
-    return bev_e
+    return bev_e.astype(float)
     
     
 ###############################################################
@@ -170,10 +174,8 @@ def evaluate_num_breaks(signal, max_bkps, min_size=4):
     q = signal.shape[1]-1
     
     # null model: zero breaks
-    haclags = int( (0.15*t)**(.25) )
-    
     model = sm.OLS(signal[:,0], signal[:,1:]) 
-    results = model.fit(cov_type='HAC', cov_kwds={'maxlags':haclags, 'use_correction': True}, use_t=True)
+    results = model.fit(cov_type='HAC', cov_kwds={'maxlags':_calc_hac_lag(t), 'use_correction': True}, use_t=True)
     
     # start lists with first element the result for zero breaks model
     ssr = [results.ssr]
@@ -200,9 +202,8 @@ def evaluate_num_breaks(signal, max_bkps, min_size=4):
         fits_tmp = []       
         for idx, b in enumerate(bkps[:-1]):
             # iterate over the segments of the model with m breaks, add up the ssr piece-wise
-            haclags = int( (0.15*(bkps[idx+1]-bkps[idx]))**(.25) )
             model = sm.OLS(signal[bkps[idx]:bkps[idx+1],0], signal[bkps[idx]:bkps[idx+1],1:]) 
-            results = model.fit(cov_type='HAC', cov_kwds={'maxlags':haclags, 'use_correction': True}, use_t=True)
+            results = model.fit(cov_type='HAC', cov_kwds={'maxlags':_calc_hac_lag(bkps[idx+1]-bkps[idx]), 'use_correction': True}, use_t=True)
             
             # add the ssr for the segment
             ssr_tmp += results.ssr
