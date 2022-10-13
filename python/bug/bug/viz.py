@@ -2,14 +2,15 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 
 ###############################################
-def format_plot(ax, rec_info=None,xgrid=True):
+def format_plot(ax, recession_dates=None, xgrid=True, draw_legend=False):
 
-    if rec_info is not None:
-        for idx, s in enumerate(rec_info[0]):
-            plt.axvspan(rec_info[0][idx], rec_info[1][idx], facecolor='grey', alpha=0.5, zorder=-100)
+    if recession_dates is not None:
+        for idx, s in enumerate(recession_dates[0]):
+            plt.axvspan(recession_dates[0][idx], recession_dates[1][idx], facecolor='grey', alpha=0.5, zorder=-100)
 
     if xgrid:
         ax.grid(axis='x')
@@ -18,11 +19,21 @@ def format_plot(ax, rec_info=None,xgrid=True):
     ax.spines["bottom"].set_color('k')
     ax.spines["left"].set_linewidth(1.5)
     ax.spines["left"].set_color('k')
+    
+    if draw_legend:
+        # add legend for recession indicator
+        handles, _ = ax.get_legend_handles_labels()
+        labels = ['series']
+        if recession_dates is not None:
+            handles.append(Patch(facecolor='grey',))
+            labels.append("Recession indicator")
+        
+        ax.legend(handles=handles, labels=labels, loc=3)        
 
 
 
 ##################################################
-def plot_beveridge_elasticity_series(e, rec_info=None, fill=True, color='blueviolet', figsize=(9, 6)):
+def plot_beveridge_elasticity_series(e, recession_dates=None, fill=True, color='blueviolet', figsize=(9, 6)):
 
 
     fig = plt.figure()
@@ -34,7 +45,7 @@ def plot_beveridge_elasticity_series(e, rec_info=None, fill=True, color='bluevio
     if fill:
         plt.fill_between(e.index, e['UB'], e['LB'], color=color, alpha=.3)
 
-    format_plot(ax, rec_info=rec_info, xgrid=True)
+    format_plot(ax, recession_dates=recession_dates, xgrid=True)
 	
     plt.ylabel('Beveridge Elasticity', fontsize=12)
     plt.title('Beveridge Elasticity', fontsize=14)
@@ -43,7 +54,7 @@ def plot_beveridge_elasticity_series(e, rec_info=None, fill=True, color='bluevio
     return ax
 
 ##############################################################
-def plot_beveridge_gap_series(gap, internal_bkps=None, rec_info=None, linecolor='blue', figsize=(9, 6)):
+def plot_beveridge_gap_series(gap, internal_bkps=None, recession_dates=None, linecolor='blue', figsize=(9, 6)):
 
 
     ax = gap.plot(figsize=figsize, linewidth=2, color=linecolor, label='Beveridge Gap')
@@ -72,7 +83,7 @@ def plot_beveridge_gap_series(gap, internal_bkps=None, rec_info=None, linecolor=
             plt.axvline(x=internal_bkps[-1], color=linecolor, linewidth=1.5, alpha=.8, linestyle='-.', zorder=-10)
                     
     
-    format_plot(ax, rec_info=rec_info, xgrid=True)
+    format_plot(ax, recession_dates=recession_dates, xgrid=True)
     
     plt.ylabel('Unemployment Gap', fontsize=12)
     plt.title('Beveridgean Unemployment Gap', fontsize=14)
@@ -109,25 +120,28 @@ def plot_beveridge_curve_segments(log_u, log_v, bkps, color='teal', figsize=(6,6
         plt.xlabel('Log Unemployment Rate', fontsize=12)
     
         plt.title('Beveridge Curve '+str(log_u.index[bkps[idx]])+'--'+str(log_u.index[bkps[idx+1]-1]),
-                  fontsize=14)
+                  fontsize=13, fontweight='bold')
+        plt.suptitle('Beveridge Curve '+str(log_u.index[0])+'--'+str(log_u.index[-1]), fontsize=14)
 
     
 ##############################################################
-def plot_beveridge_curve_fits(log_u, log_v, bkps, fits, e, figsize=(8,8)):
+def plot_beveridge_curve_fits(log_u, log_v, bkps, coeffs=None, figsize=(8,8)):
 
 
     plt.figure(figsize = figsize)
     ax = plt.plot(log_u, log_v, linewidth=1, color='grey', zorder=-10)
 
+    if coeffs is None:
+        _, coeffs = compute_beveridge_elasticity(log_u, log_v, use_bp_defaults=False, bkps_in=bkps)
 
    
     if len(bkps) == len(log_u):
         # assume class label for each (integers starting at zero)
-        _plot_class_fits(log_u, log_v, bkps, fits, e)
+        _plot_class_fits(log_u, log_v, bkps, coeffs)
 
     else: 
         # else we plot contiguous segments
-        _plot_segment_fits(log_u, log_v, bkps, fits, e)
+        _plot_segment_fits(log_u, log_v, bkps, coeffs)
         
     
     plt.gca().spines["bottom"].set_linewidth(1.5)
@@ -141,7 +155,7 @@ def plot_beveridge_curve_fits(log_u, log_v, bkps, fits, e, figsize=(8,8)):
     plt.title('Beveridge Curve '+str(log_u.index[0])+'--'+str(log_u.index[-1]), fontsize=14)    
 
 ###############################################
-def _plot_segment_fits(log_u, log_v, bkps, fits, e):
+def _plot_segment_fits(log_u, log_v, bkps, coeffs):
     
     handles = []
     
@@ -154,13 +168,14 @@ def _plot_segment_fits(log_u, log_v, bkps, fits, e):
                  log_v.iloc[bkps[idx]:bkps[idx+1]], linewidth=2, color=colors[idx], alpha=.7)
                  
         plt.plot(log_u.iloc[bkps[idx]:bkps[idx+1]], 
-                 fits[idx],linewidth=2.5, linestyle='dotted', color=colors[idx], alpha=1)
+                 _compute_segment_fits(log_u.iloc[bkps[idx]:bkps[idx+1]], coeffs[idx]),
+                 linewidth=2.5, linestyle='dotted', color=colors[idx], alpha=1)
 
     
         q = log_u.index[bkps[idx]]
 
         handles.append(Line2D([0], [0],color=colors[idx], linewidth=2,label=str(q)+' : '+ 
-                      str( round(e[idx],2) )  ))
+                      str( round(coeffs[idx][0],2) )  ))
 
     plt.legend(handles=handles, bbox_to_anchor=(1,1), title='Period Beginning : Slope  ')
 
@@ -180,13 +195,22 @@ def _plot_class_fits(log_u, log_v, labels, fits, e):
                     log_v.iloc[labels==c],
                      color=colors[c], alpha=.95)            
 
-        plt.plot(log_u[labels==c], fits[c],
-                 linewidth=2.5, linestyle='dotted', color=colors[c], alpha=1)
+        plt.plot(log_u[labels==c], 
+                 _compute_segment_fits(log_u[labels==c], coeffs[idx]),
+                 linewidth=2.5, linestyle='dotted', color=colors[idx], alpha=1)
+
 
         handles.append(Line2D([0], [0],color=colors[c], linewidth=2,
-                                  label=str(c)+" : "+str( round(e[c],2) )  ))
+                                  label=str(c)+" : "+str( round(coeffs[c][0],2) )  ))
 
     plt.legend(handles=handles, bbox_to_anchor=(1,1), title='Cluster : Slope')
 
+
+###############################################
+def _compute_segment_fits(log_u, coeffs):
+    # compute the segment OLS fits from coeffs from compute_beveridge_elasticity
+
+    return (-coeffs[0]*log_u + coeffs[2])
+        
 
 
