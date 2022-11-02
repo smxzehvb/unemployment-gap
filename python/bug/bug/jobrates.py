@@ -33,7 +33,7 @@ def compute_job_finding_rate(u_level, u_short, quarterly=True, adjust_short=True
     if adjust_short:
         # Adjust short-term unemployment level after January 1994 as in Shimer (2012, appendix A)
         u_short_adj = u_short.copy(deep=True)
-        u_short_adj[u_short_adj.index > '1994-1'] = 1.1*u_short_adj[u_short_adj.index > '1994-1']
+        u_short_adj[u_short_adj.index >= '1994-1'] = 1.1*u_short_adj[u_short_adj.index >= '1994-1']
     else:
         u_short_adj = u_short
         

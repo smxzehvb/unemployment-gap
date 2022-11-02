@@ -6,7 +6,7 @@ from matplotlib.patches import Patch
 
 
 ###############################################
-def format_plot(ax, recession_dates=None, xgrid=True, draw_legend=False):
+def format_plot(ax, recession_dates=None, xgrid=True, augment_legend=False, legend_loc=3):
 
     if recession_dates is not None:
         for idx, s in enumerate(recession_dates[0]):
@@ -20,20 +20,19 @@ def format_plot(ax, recession_dates=None, xgrid=True, draw_legend=False):
     ax.spines["left"].set_linewidth(1.5)
     ax.spines["left"].set_color('k')
     
-    if draw_legend:
+    if augment_legend:
         # add legend for recession indicator
-        handles, _ = ax.get_legend_handles_labels()
-        labels = ['series']
+        handles, labels = ax.get_legend_handles_labels()
+
         if recession_dates is not None:
             handles.append(Patch(facecolor='grey',))
             labels.append("Recession indicator")
         
-        ax.legend(handles=handles, labels=labels, loc=3)        
-
+        ax.legend(handles=handles, labels=labels, loc=legend_loc)        
 
 
 ##################################################
-def plot_beveridge_elasticity_series(e, recession_dates=None, fill=True, color='blueviolet', figsize=(9, 6)):
+def plot_beveridge_elasticity_series(e, recession_dates=None, fill=True, color='blueviolet', draw_legend=False, figsize=(9, 6)):
 
 
     fig = plt.figure()
@@ -49,7 +48,17 @@ def plot_beveridge_elasticity_series(e, recession_dates=None, fill=True, color='
 	
     plt.ylabel('Beveridge Elasticity', fontsize=12)
     plt.title('Beveridge Elasticity', fontsize=14)
-    plt.legend()
+
+    if draw_legend:
+        # add legend for recession indicator
+        handles, _ = ax.get_legend_handles_labels()
+        handles = handles[:2]
+        labels = ['est. elasticity', 'upper/lower bounds']
+        if recession_dates is not None:
+            handles.append(Patch(facecolor='grey',))
+            labels.append("Recession indicator")
+        
+        ax.legend(handles=handles, labels=labels, loc=3)   
     
     return ax
 
