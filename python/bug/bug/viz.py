@@ -32,7 +32,8 @@ def format_plot(ax, recession_dates=None, xgrid=True, augment_legend=False, lege
 
 
 ##################################################
-def plot_beveridge_elasticity_series(e, recession_dates=None, fill=True, color='blueviolet', draw_legend=False, figsize=(9, 6)):
+def plot_beveridge_elasticity_series(e, recession_dates=None, fill=True, color='blueviolet', 
+                                     draw_legend=False, legend_loc=3, figsize=(9, 6)):
 
 
     fig = plt.figure()
@@ -58,7 +59,7 @@ def plot_beveridge_elasticity_series(e, recession_dates=None, fill=True, color='
             handles.append(Patch(facecolor='grey',))
             labels.append("Recession indicator")
         
-        ax.legend(handles=handles, labels=labels, loc=3)   
+        ax.legend(handles=handles, labels=labels, loc=legend_loc)   
     
     return ax
 
@@ -72,31 +73,23 @@ def plot_beveridge_gap_series(gap, internal_bkps=None, recession_dates=None, lin
     
     if internal_bkps is not None:     
     
-        cmap = plt.get_cmap('CMRmap')        
-    
-        if len(internal_bkps) == len(gap):
-            # assuming these are class labels
-            colors = cmap( np.linspace( .1,.9,max(internal_bkps)+1 ) )
-            for idx, c in enumerate(internal_bkps):
-                plt.axvline(x=gap.index[idx], color=colors[c], linewidth=1.5, alpha=.5, zorder=-20)
-        else:
-            # assuming these are temporal breakpoints
-            colors = cmap( np.linspace( .1,.9,len(internal_bkps)+1 ) )
+        cmap = plt.get_cmap('CMRmap')
+        colors = cmap( np.linspace( .1,.9,len(internal_bkps)+1 ) )
             
-            plt.axvspan(gap.index[0], gap.index[1], facecolor=colors[0], alpha=0.5, zorder=-20)
-            for idx, b in enumerate(internal_bkps[:-1]):
-                plt.axvspan(internal_bkps[idx], internal_bkps[idx+1], facecolor=colors[idx], alpha=0.5, zorder=-20)
-                plt.axvline(x=b, color=linecolor, linewidth=1.5, alpha=.8, linestyle='-.', zorder=-10)
+        plt.axvspan(gap.index[0], gap.index[1], facecolor=colors[0], alpha=0.5, zorder=-20)
+        for idx, b in enumerate(internal_bkps[:-1]):
+            plt.axvspan(internal_bkps[idx], internal_bkps[idx+1], facecolor=colors[idx], alpha=0.5, zorder=-20)
+            plt.axvline(x=b, color=linecolor, linewidth=1.5, alpha=.8, linestyle='-.', zorder=-10)
                 
-            plt.axvspan(internal_bkps[-1], gap.index[-1], facecolor=colors[-1], alpha=0.5, zorder=-20)
-            plt.axvline(x=internal_bkps[-1], color=linecolor, linewidth=1.5, alpha=.8, linestyle='-.', zorder=-10)
+        plt.axvspan(internal_bkps[-1], gap.index[-1], facecolor=colors[-1], alpha=0.5, zorder=-20)
+        plt.axvline(x=internal_bkps[-1], color=linecolor, linewidth=1.5, alpha=.8, linestyle='-.', zorder=-10)
                     
     
     format_plot(ax, recession_dates=recession_dates, xgrid=True)
     
     plt.ylabel('Unemployment Gap', fontsize=12)
     plt.title('Beveridgean Unemployment Gap', fontsize=14)
-    plt.legend()
+    plt.legend(loc=2)
     
     return ax
 

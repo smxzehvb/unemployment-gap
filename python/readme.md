@@ -1,7 +1,7 @@
 # BUG: Beveridgean Unemployment Gap in Python
 
 This python package re-implements the computations associated with the paper "Beveridgean unemployment gap"
-by Pascal Michaillat & Emmanuel Saez (2021). https://doi.org/10.1016/j.pubecp.2021.100009
+by Pascal Michaillat & Emmanuel Saez (2021). [[link]](https://doi.org/10.1016/j.pubecp.2021.100009)
 
 The paper's code was originally implemented in MATLAB, and can be found on the project's 
 [GitHub page](https://github.com/pascalmichaillat/unemployment-gap)
@@ -17,15 +17,14 @@ The paper's code was originally implemented in MATLAB, and can be found on the p
   * kneed
 
 The package 'kneed' is only used in some of the example notebooks. It is not required for the execution of functions 
-in the bug package.   
+in the main bug package.   
   
 ## Development
 
 This package is a work-in-progress, academic package, and is not guaranteed to be robust.
 
-This version has been tested with (from anaconda 4.12.0 for Linux):
+This version has been tested with python 3.9.12, from anaconda 4.12.0 for Linux 64-bit, and the following package versions:
 
-  * python==3.9.12
   * IPython==8.2.0
   * jupyter_core==4.9.2
   * pandas==1.4.2
@@ -40,9 +39,9 @@ Additional packages installed from pypi:
   * kneed==0.7.0
    
   
-Development was done on a desktop running 64-bit Pop!_OS 20.04 LTS (a flavor of Ubuntu) with GNOME version 3.36.8.
+Development was done on a desktop running 64-bit Pop!_OS 22.04 LTS (a flavor of Ubuntu), with Intel Core i7-6700 CPU @3.40GHz ×8 and 32GB RAM. 
   
-## Conversion crosswalk
+## Functions Conversion Crosswalk
 
 
 | matlab file | python function | python file/notes | 
@@ -89,6 +88,25 @@ Development was done on a desktop running 64-bit Pop!_OS 20.04 LTS (a flavor of 
 | monthlyToQuarterly.m		| *depreciated*	| ^ |
 
 
+
+## Notebooks
+
+Suggested order for exploring the example jupyter notebooks:
+
+  1. BUG\_paper\_section\_2.ipynb
+  1. BUG\_paper\_appendix\_B.ipynb
+  1. BUG\_paper\_appendix\_C-D.ipynb
+  1. BUG\_paper\_section\_5.ipynb
+  1. BUG\_paper\_sec5-7\_appE.ipynb
+  1. Computing\_Bev\_Gap\_w\_latest\_data.ipynb
+  1. More\_on\_Breakpoints\_monthly\_series.ipynb
+  1. Lots\_More\_on\_Breakpoints.ipynb
+
+## References
+
+More info on ruptures python package [[GitHub link]](https://github.com/deepcharles/ruptures):
+
+  - C. Truong, L. Oudre, N. Vayatis. Selective review of offline change point detection methods. _Signal Processing_, 167:107299, 2020. [[journal]](https://doi.org/10.1016/j.sigpro.2019.107299) [[pdf]](http://www.laurentoudre.fr/publis/TOG-SP-19.pdf)
 
 
 

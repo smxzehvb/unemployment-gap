@@ -10,24 +10,18 @@ def _calc_hac_lag(seq_len):
     return max(2,int( (0.15*seq_len)**(.25)))
 
 ###############################################################
-def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkps_in=None):
+def compute_beveridge_elasticity(log_u, log_v, bkps_in=None):
     '''
-    This function computes beveridge elasticity using the unemployment rate u 
-    and vacancy rate v. Elasticity is the estimated regression coefficient in 
+    This function computes beveridge elasticity using the log unemployment rate u 
+    and log vacancy rate v. Elasticity is the estimated regression coefficient in 
     each of the detected structural segments.
     
     Parameters
     -----------
-    u: scalar or pd.Series
-        Current unemployment rate. value in [0,1]
-    v: scalar or pd.Series
-        Vacancy rate. value in [0,1]
-    quarterly: bool, optional
-    use_bp_defaults: bool, optional
-        Whether to use Bai-Perron method for estimating structural break timepoints,
-        using the same parameter settings as in Michaillat & Saez (2021).
-        This will result in the exact same breakpoints as the MATLAB implementation.
-        Default is True. (Currently no other approach is implemented, so True is forced.)
+    log_u: scalar or pd.Series
+        Log current unemployment rate. 
+    log_v: scalar or pd.Series
+        Log vacancy rate. 
     bkps_in: list of int, optional
         The other option is to run a breakpoint estimation outside of this function and 
         feed this in. If bkps_in is specified, this will suppress the estimation with 
@@ -38,30 +32,14 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
     --------
     pd.DataFrame
         bev_e: beveridge elasticity and 95% CI estimates as time series.
+    list
+        coeffs: list of tuples of linear regression coeffs for the fit of each segment
     '''
-    
-    if quarterly:
-        log_u = np.log(u.resample('Q').mean())
-    
-        log_v = np.log(v.resample('Q').mean())
-        
-        last_index = min(log_u.last_valid_index(), log_v.last_valid_index())
-        log_u = log_u.loc[:last_index]
-        log_v = log_v.loc[:last_index]
-        
-        
-    else:
-        log_u = np.log(u)
-        log_v = np.log(v)
-        
+         
     if bkps_in is None:
-    
-        use_bp_defaults = True ## because we have not implemented any alternatives
-        if use_bp_defaults:
-            est_bkps = get_bp_breakpoints(log_u, log_v, use_bp_defaults=True)
+        est_bkps = get_bp_breakpoints(log_u, log_v, use_bp_defaults=True)
             
     else:
-    
         est_bkps = bkps_in
         
     # Now, ruptures package does not actually return the coeffs from the 
@@ -85,7 +63,7 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
         seq_len = est_bkps[idx+1] - est_bkps[idx]
         model = sm.OLS(y[est_bkps[idx]:est_bkps[idx+1]], X[est_bkps[idx]:est_bkps[idx+1],:]) 
         results = model.fit(cov_type='HAC', cov_kwds={'maxlags':_calc_hac_lag(seq_len), 'use_correction': True}, use_t=True)
-        coeffs.append((- results.params[0], results.bse[0]))
+        coeffs.append((- results.params[0], results.bse[0], results.params[1]))
 
         
     bev_e = pd.DataFrame(columns=['E','SE', 'LB', 'UB'], index=log_v.index)
@@ -97,11 +75,12 @@ def compute_beveridge_elasticity(u, v, quarterly=True, use_bp_defaults=True, bkp
         bev_e.iloc[est_bkps[idx]:est_bkps[idx+1],3] = a[0] + 1.96*a[1]
         
 
-    return bev_e.astype(float)
+    return bev_e.astype(float), coeffs
+
     
     
 ###############################################################
-def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=1):
+def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=None, n_bkps=None):
     '''
     This function calls the dynamic programming method with linear 
     cost functions from the python ruptures package to calculate 
@@ -118,9 +97,9 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=1)
         using the same parameter settings as in Michaillat & Saez (2021). Default is True.
     min_size: int, optional
         A valid min_size parameter to be used with ruptures rpt.Dynp algorithm.
-        Should be specified if use_bp_defaults=False.
+        Must be specified if use_bp_defaults=False.
     n_bkps: int, optional
-        Should be specified if use_bp_defaults=False.
+        Must be specified if use_bp_defaults=False.
         
         
     Returns
@@ -136,6 +115,10 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=1)
         Namely: [0, 41, 84, 153, 194, 235, 276].
 
     '''
+    
+    if not use_bp_defaults:
+        if min_size is None or n_bkps is None:
+            raise ValueError('Must input min_size and n_bkps parameters if use_bp_defaults=False.')
     
     # check there are no NaNs at the end of the data:
     last_index = min(log_u.last_valid_index(), log_v.last_valid_index())
@@ -158,8 +141,10 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=1)
         min_size = int(0.15*len(log_v)) 
         n_bkps = 5
 
+
     # call the dynamic programming algo
     fit = rpt.Dynp(model='linear', min_size=min_size, jump=1).fit(signal)
+        
     est_bkps = fit.predict(n_bkps=n_bkps)
     est_bkps.insert(0,0)  
     
@@ -167,7 +152,7 @@ def get_bp_breakpoints(log_u, log_v, use_bp_defaults=True, min_size=4, n_bkps=1)
         
     
 ###############################################################
-def evaluate_num_breaks(signal, max_bkps, min_size=4):
+def evaluate_num_breaks(signal, max_bkps, min_size=4,):
 
     
     t = signal.shape[0]
@@ -185,8 +170,11 @@ def evaluate_num_breaks(signal, max_bkps, min_size=4):
     fstat_zero = [ None ]
     fstat_run = [ None ]    
     
+
     # set up the breakpoint detection
+    # call the dynamic programming algo
     fit = rpt.Dynp(model='linear', min_size=min_size, jump=1).fit(signal)
+        
     _ = fit.predict(max_bkps)
     
     bps_list=[ [0,signal.shape[0]] ]
@@ -199,11 +187,14 @@ def evaluate_num_breaks(signal, max_bkps, min_size=4):
         bps_list.append(bkps)
         
         ssr_tmp = 0  
-        fits_tmp = []       
+        fits_tmp = []
+        
         for idx, b in enumerate(bkps[:-1]):
             # iterate over the segments of the model with m breaks, add up the ssr piece-wise
             model = sm.OLS(signal[bkps[idx]:bkps[idx+1],0], signal[bkps[idx]:bkps[idx+1],1:]) 
-            results = model.fit(cov_type='HAC', cov_kwds={'maxlags':_calc_hac_lag(bkps[idx+1]-bkps[idx]), 'use_correction': True}, use_t=True)
+            
+            results = model.fit(cov_type='HAC', cov_kwds={'maxlags':_calc_hac_lag(bkps[idx+1]-bkps[idx]), 
+                                                          'use_correction': True}, use_t=True)
             
             # add the ssr for the segment
             ssr_tmp += results.ssr
