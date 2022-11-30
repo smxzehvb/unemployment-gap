@@ -46,29 +46,29 @@ Development was done on a desktop running 64-bit Pop!_OS 22.04 LTS (a flavor of 
 
 | matlab file | python function | python file/notes | 
 | :---------- | :-------------- | :---------: |	
-|.....................................................|
+|.....................................................|.....................................................|.....................................................|
 | baiPerron.m					| `get_bp_breakpoints` 			 | breakpoints.py |
 | baiPerron.m  					| `evaluate_num_breaks` 		 | ^ |
 | getBreakDate.m				| `get_bp_breakpoints` 			 | ^ |
 | getBeveridgeElasticity.m		| `compute_beveridge_elasticity` | ^ |
-|.....................................................|
+|.....................................................|.....................................................|.....................................................|
 | computeUnemploymentGap.m			| `compute_unemployment_gap` 		| suffstats.py |
 | computeEfficientTightness.m		| `compute_efficient_tightness` 	| ^ |
 | computeEfficientUnemployment.m	| `compute_efficient_unemployment`  | ^ |
 | computeBeveridgeInverse.m		| `compute_beveridge_inverse`  			| ^ |
 | computeRecruitingInverse.m	| `compute_recruiting_inverse` 			| ^ |
 | computeNonworkInverse.m		| `compute_nonwork_inverse`	   			| ^ |
-|.....................................................|
+|.....................................................|.....................................................|.....................................................|
 | computeBeveridgeanUnemployment.m	| `compute_beveridgean_unemployment` | dmpmodel.py |
 | computeMatchingElasticity.m		| `compute_matching_elasticity` 	 | ^ |
 | computeMatchingEfficacy.m			| `compute_matching_efficacy`		 | ^ |
 | computeSeparationEfficacy.m		| `compute_separation_efficacy`		 | ^ |
 | computeEfficiencyEndogenous.m		| `compute_endogenous_efficiency`	 | ^ |
 | computeEfficiencyHosios.m			| `compute_hosios_efficiency`		 | ^ |
-|.....................................................|
+|.....................................................|.....................................................|.....................................................|
 | measureJobFinding.m			| `compute_job_finding_rate`  	| jobrates.py |
 | measureJobSeparation.m		| `compute_job_separation_rate`	| ^ |
-|.....................................................|
+|.....................................................|.....................................................|.....................................................|
 | 	*NA*					| `plot_beveridge_elasticity_series` |  viz.py  |
 | 	*NA*					| `plot_beveridge_gap_series` |  ^  |
 | 	*NA*					| `plot_beveridge_curve_fits` |  ^  |
@@ -76,7 +76,7 @@ Development was done on a desktop running 64-bit Pop!_OS 22.04 LTS (a flavor of 
 | formatPlot.m				| `format_plot`	| ^ |
 | formatFigure.m			| *depreciated*	| ^ |
 | figureX.m					| *depreciated*	| ^ |
-|.....................................................|
+|.....................................................|.....................................................|.....................................................|
 | getUnemploymentRate.m		| *depreciated*	| handled wth pandas functionality <br>  demonstrated in jupyter notebooks |
 | getVacancyRate.m			| *depreciated*	| ^ |
 | getRecessionDate.m		| *depreciated*	| ^ |
@@ -93,14 +93,14 @@ Development was done on a desktop running 64-bit Pop!_OS 22.04 LTS (a flavor of 
 
 Suggested order for exploring the example jupyter notebooks:
 
-  1. BUG\_paper\_section\_2.ipynb
-  1. BUG\_paper\_appendix\_B.ipynb
-  1. BUG\_paper\_appendix\_C-D.ipynb
-  1. BUG\_paper\_section\_5.ipynb
-  1. BUG\_paper\_sec5-7\_appE.ipynb
-  1. Computing\_Bev\_Gap\_w\_latest\_data.ipynb
-  1. More\_on\_Breakpoints\_monthly\_series.ipynb
-  1. Lots\_More\_on\_Breakpoints.ipynb
+  * 01\_BUG\_paper\_section\_2.ipynb
+  * 02\_BUG\_paper\_appendix\_B.ipynb
+  * 03\_BUG\_paper\_appendix\_C-D.ipynb
+  * 04\_BUG\_paper\_section\_5.ipynb
+  * 05\_BUG\_paper\_sec5-7\_appE.ipynb
+  * 06\_Computing\_Bev\_Gap\_w\_latest\_data.ipynb
+  * 07\_More\_on\_Breakpoints\_monthly\_series.ipynb
+  * 08\_Lots\_More\_on\_Breakpoints.ipynb
 
 ## References
 
