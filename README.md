@@ -66,18 +66,18 @@ The figure-producing scripts also call the following Matlab functions:
 * `computeRecruitingInverse.m` - compute inverse-optimum recruiting cost from sufficient-statistic formula
 * `computeSeparationEfficacy.m` - compute separation-efficacy ratio in DMP model
 * `computeUnemploymentGap.m` - compute unemployment gap from sufficient-statistic formula 
-* `getBeveridgeElasticity.m` - return Beveridge elasticity in the United States, 1951--2019
+* `getBeveridgeElasticity.m` - return Beveridge elasticity in the United States, 1951–2019
 * `getBreakDate.m` - return dates of structural breaks in US Beveridge curve between 1951 and 2019
-* `getLaborProductivity.m` - return quarterly labor productivity in the United States, 1951--2019
-* `getNairu.m` - return NAIRU in the United States, 1960Q1--2018Q3
-* `getNaturalUnemployment.m` - return natural rate of unemployment in the United States, 1951--2019
+* `getLaborProductivity.m` - return quarterly labor productivity in the United States, 1951–2019
+* `getNairu.m` - return NAIRU in the United States, 1960Q1–2018Q3
+* `getNaturalUnemployment.m` - return natural rate of unemployment in the United States, 1951–2019
 * `getRecessionDate.m` - return dates of recessions in the United States between 1951 and 2019
-* `getTimeline.m` - return quarterly timeline for 1951Q1--2019Q4
-* `getTrendUnemployment.m` - return trend of unemployment rate in the United States, 1960Q1--2018Q3
-* `getUnemploymentRate.m` - return quarterly unemployment rate in the United States, 1951--2019
-* `getVacancyRate.m` - return quarterly vacancy rate in the United States, 1951--2019
-* `measureJobFinding.m` - measure job-finding rate in the United States, 1951--2019
-* `measureJobSeparation.m` - measure job-separation rate in the United States, 1951--2019
+* `getTimeline.m` - return quarterly timeline for 1951Q1–2019Q4
+* `getTrendUnemployment.m` - return trend of unemployment rate in the United States, 1960Q1–2018Q3
+* `getUnemploymentRate.m` - return quarterly unemployment rate in the United States, 1951–2019
+* `getVacancyRate.m` - return quarterly vacancy rate in the United States, 1951–2019
+* `measureJobFinding.m` - measure job-finding rate in the United States, 1951–2019
+* `measureJobSeparation.m` - measure job-separation rate in the United States, 1951–2019
 * `monthlyToQuarterly.m` - aggregate monthly data to quarterly frequency
 
 A last helper script is `baiPerron.m`. This Matlab script estimates the US Beveridge curve with the Bai-Perron algorithm. It calls on Matlab functions stored in the folder `baiperron`. The folder was created by Yohei Yamamoto, based on Gauss code by Pierre Perron. It was downloaded from http://blogs.bu.edu/perron/files/2020/05/m-break-matlab.zip.
