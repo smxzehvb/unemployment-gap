@@ -1,6 +1,6 @@
-# Code & Data for "Beveridgean Unemployment Gap"
+# Beveridgean Unemployment Gap: Code and Data
 
-This repository contains the code and data associated with the article ["Beveridgean Unemployment Gap"](https://www.pascalmichaillat.org/9.html), written by [Pascal Michaillat](https://www.pascalmichaillat.org) and [Emmanuel Saez](https://eml.berkeley.edu/~saez/), and published in the [Journal of Public Economics Plus](https://doi.org/10.1016/j.pubecp.2021.100009) in November 2021.
+This repository contains the code and data accompanying the article ["Beveridgean Unemployment Gap"](https://pascalmichaillat.org/9/), written by [Pascal Michaillat](https://pascalmichaillat.org) and [Emmanuel Saez](https://eml.berkeley.edu/~saez/), and published in the [Journal of Public Economics Plus](https://doi.org/10.1016/j.pubecp.2021.100009) in November 2021.
 
 ## Data
 
@@ -80,7 +80,7 @@ The figure-producing scripts also call the following Matlab functions:
 * `measureJobSeparation.m` - measure job-separation rate in the United States, 1951--2019
 * `monthlyToQuarterly.m` - aggregate monthly data to quarterly frequency
 
-A last helper script is `baiPerron.m`. This Matlab script estimates the US Beveridge curve with the Bai-Perron algorithm. It calls on Matlab functions stored in the folder `baiperron`. The folder was created by Yohei Yamamoto, based on Gauss code by Pierre Perron. It was downloaded at http://blogs.bu.edu/perron/files/2020/05/m-break-matlab.zip.
+A last helper script is `baiPerron.m`. This Matlab script estimates the US Beveridge curve with the Bai-Perron algorithm. It calls on Matlab functions stored in the folder `baiperron`. The folder was created by Yohei Yamamoto, based on Gauss code by Pierre Perron. It was downloaded from http://blogs.bu.edu/perron/files/2020/05/m-break-matlab.zip.
 
 ## Figures
 
@@ -157,6 +157,10 @@ The data underlying all the figures produced by the code are saved as Excel file
 
 The subfolder `xlsx` also contains the output of the Bai-Perron algorithm produced by the script `baiperron.m`. The output is saved as a text file: `baiperron.txt`.
 
-## Software versions
+## Software
 
 The results were obtained on a Mac running macOS BigSur 11.6 with Matlab R2021a and Microsoft Excel 16.54.
+
+## License
+
+The content of this repository is licensed under the terms of the MIT License.
