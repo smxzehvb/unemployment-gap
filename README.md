@@ -1,6 +1,10 @@
-# Code & Data for "Beveridgean Unemployment Gap"
+# Beveridgean Unemployment Gap: Code and Data
 
-This repository contains the code and data associated with the article ["Beveridgean Unemployment Gap"](https://www.pascalmichaillat.org/9.html), written by [Pascal Michaillat](https://www.pascalmichaillat.org) and [Emmanuel Saez](https://eml.berkeley.edu/~saez/), and published in the [Journal of Public Economics Plus](https://doi.org/10.1016/j.pubecp.2021.100009) in November 2021.
+This repository contains the code and data accompanying the paper "Beveridgean Unemployment Gap", written by [Pascal Michaillat](https://pascalmichaillat.org) and [Emmanuel Saez](https://eml.berkeley.edu/~saez/), and published in the [Journal of Public Economics Plus](https://doi.org/10.1016/j.pubecp.2021.100009) in November 2021.
+
+## Paper webpage
+
+The paper and its online appendix are available at https://pascalmichaillat.org/9/. A more recent paper simplifying the analysis in this paper is available at https://pascalmichaillat.org/13/.
 
 ## Data
 
@@ -66,21 +70,21 @@ The figure-producing scripts also call the following Matlab functions:
 * `computeRecruitingInverse.m` - compute inverse-optimum recruiting cost from sufficient-statistic formula
 * `computeSeparationEfficacy.m` - compute separation-efficacy ratio in DMP model
 * `computeUnemploymentGap.m` - compute unemployment gap from sufficient-statistic formula 
-* `getBeveridgeElasticity.m` - return Beveridge elasticity in the United States, 1951--2019
+* `getBeveridgeElasticity.m` - return Beveridge elasticity in the United States, 1951–2019
 * `getBreakDate.m` - return dates of structural breaks in US Beveridge curve between 1951 and 2019
-* `getLaborProductivity.m` - return quarterly labor productivity in the United States, 1951--2019
-* `getNairu.m` - return NAIRU in the United States, 1960Q1--2018Q3
-* `getNaturalUnemployment.m` - return natural rate of unemployment in the United States, 1951--2019
+* `getLaborProductivity.m` - return quarterly labor productivity in the United States, 1951–2019
+* `getNairu.m` - return NAIRU in the United States, 1960Q1–2018Q3
+* `getNaturalUnemployment.m` - return natural rate of unemployment in the United States, 1951–2019
 * `getRecessionDate.m` - return dates of recessions in the United States between 1951 and 2019
-* `getTimeline.m` - return quarterly timeline for 1951Q1--2019Q4
-* `getTrendUnemployment.m` - return trend of unemployment rate in the United States, 1960Q1--2018Q3
-* `getUnemploymentRate.m` - return quarterly unemployment rate in the United States, 1951--2019
-* `getVacancyRate.m` - return quarterly vacancy rate in the United States, 1951--2019
-* `measureJobFinding.m` - measure job-finding rate in the United States, 1951--2019
-* `measureJobSeparation.m` - measure job-separation rate in the United States, 1951--2019
+* `getTimeline.m` - return quarterly timeline for 1951Q1–2019Q4
+* `getTrendUnemployment.m` - return trend of unemployment rate in the United States, 1960Q1–2018Q3
+* `getUnemploymentRate.m` - return quarterly unemployment rate in the United States, 1951–2019
+* `getVacancyRate.m` - return quarterly vacancy rate in the United States, 1951–2019
+* `measureJobFinding.m` - measure job-finding rate in the United States, 1951–2019
+* `measureJobSeparation.m` - measure job-separation rate in the United States, 1951–2019
 * `monthlyToQuarterly.m` - aggregate monthly data to quarterly frequency
 
-A last helper script is `baiPerron.m`. This Matlab script estimates the US Beveridge curve with the Bai-Perron algorithm. It calls on Matlab functions stored in the folder `baiperron`. The folder was created by Yohei Yamamoto, based on Gauss code by Pierre Perron. It was downloaded at http://blogs.bu.edu/perron/files/2020/05/m-break-matlab.zip.
+A last helper script is `baiPerron.m`. This Matlab script estimates the US Beveridge curve with the Bai-Perron algorithm. It calls on Matlab functions stored in the folder `baiperron`. The folder was created by Yohei Yamamoto, based on Gauss code by Pierre Perron. It was downloaded from http://blogs.bu.edu/perron/files/2020/05/m-break-matlab.zip.
 
 ## Figures
 
@@ -157,6 +161,10 @@ The data underlying all the figures produced by the code are saved as Excel file
 
 The subfolder `xlsx` also contains the output of the Bai-Perron algorithm produced by the script `baiperron.m`. The output is saved as a text file: `baiperron.txt`.
 
-## Software versions
+## Software
 
 The results were obtained on a Mac running macOS BigSur 11.6 with Matlab R2021a and Microsoft Excel 16.54.
+
+## License
+
+The content of this repository is licensed under the terms of the MIT License.
