@@ -4,7 +4,7 @@ This repository contains the code and data accompanying the paper "Beveridgean U
 
 ## Paper webpage
 
-The paper and its online appendix are available at https://pascalmichaillat.org/9/. A more recent paper simplifying the analysis in this paper is available at https://pascalmichaillat.org/13/.
+The paper and its online appendix are available at https://pascalmichaillat.org/9/.
 
 ## Data
 
