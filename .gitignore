@@ -2,6 +2,6 @@ python/notebooks/.ipynb_checkpoints/
 python/notebooks/.ipynb_checkpoints/*
 python/bug/__pycache__/
 python/bug/__pycache__/*
-*.pdf
 ReplicationFiles_pt6/
 code/.~lock*
+.DS_Store
