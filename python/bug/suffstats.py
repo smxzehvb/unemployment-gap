@@ -8,7 +8,7 @@ import pandas as pd
 
 
 ###############################################################
-def compute_unemployment_gap(u, v, epsilon, zeta=0.26, kappa=0.92):
+def compute_unemployment_gap(u, v, epsilon=None, zeta=0.26, kappa=0.92, use_sqrt_uv=False):
     '''
     This function computes the unemployment gap u_gap using the sufficient-statistic 
     formula in proposition 3 (eqn 5), the current unemployment rate u and vacancy rate v, 
@@ -34,17 +34,19 @@ def compute_unemployment_gap(u, v, epsilon, zeta=0.26, kappa=0.92):
         u_gap: Unemployment gap.
     '''
     
-    u_gap = u - compute_efficient_unemployment(u, v, epsilon, zeta, kappa)
+    u_gap = u - compute_efficient_unemployment(u, v, epsilon=epsilon, zeta=zeta, kappa=kappa, use_sqrt_uv=use_sqrt_uv ) 
     
     return u_gap
     
 ###############################################################
-def compute_efficient_unemployment(u, v, epsilon, zeta=0.26, kappa=0.92):
+def compute_efficient_unemployment(u, v, epsilon=None, zeta=0.26, kappa=0.92, use_sqrt_uv=False):
     '''
     This function computes the efficient unemployment rate using the sufficient-statistic 
     formula in proposition 3 (eqn 5), the current unemployment rate u and vacancy rate v, 
     and three sufficient statistics: Beveridge elasticity epsilon, social value of nonwork 
     zeta, and recruiting cost kappa.
+    Alternativly, with option use_sqrt_uv, it computes u-star as sqrt(uv), as in 
+    paper https://pascalmichaillat.org/13p.pdf
     
     Parameters
     -----------
@@ -58,6 +60,8 @@ def compute_efficient_unemployment(u, v, epsilon, zeta=0.26, kappa=0.92):
         Social value of nonwork.
     kappa: scalar or pd.Series
         Recruiting cost.
+    use_sqrt_uv: bool
+        Whether to use sqrt(uv) as estimate of u-star
     
     Returns
     --------
@@ -65,8 +69,15 @@ def compute_efficient_unemployment(u, v, epsilon, zeta=0.26, kappa=0.92):
         u_star: Efficient unemployment rate.
     '''
     
-    C = (kappa * epsilon) / (1. - zeta)    
-    u_star = np.power(  C * v / np.power(u, -epsilon) , 1./(1. + epsilon) )
+    if use_sqrt_uv:
+        u_star = np.sqrt(u*v)
+    
+    else:
+        if epsilon is None:
+            raise ValueError("must input 'epsilon' if use_sqrt_uv=False.")
+            
+        C = (kappa * epsilon) / (1. - zeta)    
+        u_star = np.power(  C * v / np.power(u, -epsilon) , 1./(1. + epsilon) )
     
     return u_star
     
