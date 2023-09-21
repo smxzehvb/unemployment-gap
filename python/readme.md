@@ -9,6 +9,7 @@ The paper's code was originally implemented in MATLAB, and can be found on the p
 ## Requirements
 
   * pandas
+  * pandas-datareader
   * numpy
   * scipy
   * statsmodels
@@ -23,7 +24,7 @@ in the main bug package.
 
 This package is a work-in-progress, academic package, and is not guaranteed to be robust.
 
-This version has been tested with python 3.9.12, from anaconda 4.12.0 for Linux 64-bit, and the following package versions:
+This version has been tested with python 3.9.12, from anaconda 2022.05 for Linux 64-bit, and the following package versions:
 
   * IPython==8.2.0
   * jupyter_core==4.9.2
@@ -40,6 +41,21 @@ Additional packages installed from pypi:
    
   
 Development was done on a desktop running 64-bit Pop!_OS 22.04 LTS (a flavor of Ubuntu), with Intel Core i7-6700 CPU @3.40GHz ×8 and 32GB RAM. 
+
+### Windows testing
+
+This package has also been tested on Windows 10 Pro with python 3.11.5 from anaconda 2023.07-2, with the following package versions:
+
+  * IPython==8.15.0
+  * jupyter_core==5.3.1
+  * pandas==2.0.3
+  * pandas-datareader==0.10.3
+  * numpy==1.24.3
+  * scipy==1.11.1
+  * statsmodels==0.14.0
+  * matplotlib==3.7.2
+  * ruptures==1.1.8
+  * kneed==0.8.5
   
 ## Functions Conversion Crosswalk
 
